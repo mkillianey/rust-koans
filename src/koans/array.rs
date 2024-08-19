@@ -1,9 +1,11 @@
+use std::ops::Add;
+
 // The elements of an array can be accessed by their indices
 // arr[4]
 #[test]
 fn array_index() {
     let arr: [i32; 5] = [1, 2, 3, 4, 5];
-    assert!(arr[__] == 1);
+    assert_eq!(arr[0], 1);
 }
 
 // A new fixed size array can be created by declaring the type of its elements
@@ -11,28 +13,29 @@ fn array_index() {
 // [i32; 0] = []
 #[test]
 fn array_empty() {
-    let arr: __;
-    assert!(arr.len() == 0);
+    let arr: [i32; 0] = [];
+    assert_eq!(arr.len(), 0);
 }
 
 // Attempting to access an array at an index that is
 // out of its bounds will cause an error. Let's cause
 // that error in this example.
-#[test]
-#[should_panic]
-#[allow(const_err)]
-fn out_of_index() {
-    let arr: [&'static str; 5] = ["rust", "is", "mostly", "for", "nerds"];
-    arr[__];
-}
+// #[test]
+// #[should_panic]
+// #[allow(const_err)]
+// warning: lint `const_err` has been removed: converted into hard error, see issue #71800 <https://github.com/rust-lang/rust/issues/71800> for more information
+// fn out_of_index() {
+//     let arr: [&'static str; 5] = ["rust", "is", "mostly", "for", "nerds"];
+//     arr[50];
+// }
 
 // Elements can be replaced in an array at a certain index.
 // hint: Without the 'mut' keyword, you won't be able to change data.
 #[test]
 fn insert_at_index() {
     let mut arr: [u8; 5] = [0, 1, 2, 3, 4];
-    __ = 0;
-    assert!(arr == [0, 1, 2, 3, 0]);
+    arr[4] = 0;
+    assert_eq!(arr, [0, 1, 2, 3, 0]);
 }
 
 // Arrays can be iterated over.
@@ -40,29 +43,29 @@ fn insert_at_index() {
 fn array_iteration() {
     let arr: [u8; 3] = [3, 2, 1];
     let mut iterator = arr.iter();
-    assert!(iterator.next().unwrap() == &__);
-    assert!(iterator.next().unwrap() == &__);
-    assert!(iterator.next().unwrap() == &__);
+    assert_eq!(iterator.next().unwrap(), &3);
+    assert_eq!(iterator.next().unwrap(), &2);
+    assert_eq!(iterator.next().unwrap(), &1);
 }
 
 // Arrays can also be mutated during iteration
 #[test]
 fn array_map() {
     let arr: [u32; 4] = [2, 5, 7, 4];
-    let mut iterator = arr.iter().map(__);
-    assert!(iterator.next() == Some(4));
-    assert!(iterator.next() == Some(10));
-    assert!(iterator.next() == Some(14));
-    assert!(iterator.next() == Some(8));
+    let mut iterator = arr.iter().map(|&x| 2*x);
+    assert_eq!(iterator.next(), Some(4));
+    assert_eq!(iterator.next(), Some(10));
+    assert_eq!(iterator.next(), Some(14));
+    assert_eq!(iterator.next(), Some(8));
 }
 
 // You can filter an array for results that match a given condition
 #[test]
 fn array_filter() {
     let arr: [u16; 5] = [1, 2, 3, 4, 5];
-    let mut iterator = arr.iter().filter(__);
-    assert!(iterator.next().unwrap() == &2);
-    assert!(iterator.next().unwrap() == &4);
+    let mut iterator = arr.iter().filter(|&x| x % 2 ==0);
+    assert_eq!(iterator.next().unwrap(), &2);
+    assert_eq!(iterator.next().unwrap(), &4);
     assert!(iterator.next().is_none());
 }
 
@@ -70,9 +73,9 @@ fn array_filter() {
 #[test]
 fn array_filter_map() {
     let arr: [u8; 5] = [2, 1, 2, 1, 2];
-    let mut iterator = arr.iter().filter_map(|&x| if x == 1 { Some(__) } else { None });
-    assert!(iterator.next() == Some(3));
-    assert!(iterator.next() == Some(3));
+    let mut iterator = arr.iter().filter_map(|&x| if x == 1 { Some(3) } else { None });
+    assert_eq!(iterator.next(), Some(3));
+    assert_eq!(iterator.next(), Some(3));
     assert!(iterator.next().is_none());
 }
 
@@ -86,8 +89,8 @@ fn complex_array_filter_map() {
         } else {
             None
         });
-    assert!(iterator.next().unwrap() == __);
-    assert!(iterator.next().unwrap() == __);
+    assert_eq!(iterator.next().unwrap(), 2);
+    assert_eq!(iterator.next().unwrap(), 4);
     assert!(iterator.next().is_none());
 }
 
@@ -97,8 +100,8 @@ fn for_loops() {
     let arr: [u64; 3] = [1, 2, 3];
     let mut y: u64 = 1;
     for x in &arr {
-        assert!(*x == y);
-        __
+        assert_eq!(*x, y);
+        y += 1;
     }
 }
 
@@ -107,9 +110,12 @@ fn for_loops() {
 fn for_loops_two() {
     let words: [&'static str; 3] = ["I", "love", "Rust"];
     let mut sentence: String = String::new();
+    let mut seperator = "";
     for word in words.iter() {
-        __
+        sentence = sentence.add(seperator);
+        seperator = " ";
+        sentence = sentence.add(word);
     }
     println!("{:?}", sentence);
-    assert!(sentence == "I love Rust".to_string());
+    assert_eq!(sentence, "I love Rust".to_string());
 }
